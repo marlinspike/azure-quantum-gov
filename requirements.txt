@@ -1,0 +1,4 @@
+azure.quantum
+azure-quantum[cirq]
+python-dotenv
+matplotlib
