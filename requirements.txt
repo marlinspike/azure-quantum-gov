@@ -2,3 +2,7 @@ azure.quantum
 azure-quantum[cirq]
 python-dotenv
 matplotlib
+azure-storage-blob
+azure-identity
+pytest
+azure-cli
