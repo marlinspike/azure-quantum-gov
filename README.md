@@ -20,10 +20,32 @@ Here is a description of each variable:
 - storage_account_key: A valid key for the Azure Storage account
 - file_dir: The container in the Azure Storage account where the output files will be stored
 - quantum_target: The target to run the quantum program on
+- azure_login_cmd : The command to login to Azure Commercial. This is used to authenticate to Azure Quantum. This is only required ifyou're running the sample in a container. 
+
+### Creating the JSON properties file
+There are some issues with passing an env file via Docker's --env-file flag, so we'll use a JSON properties file instead. The following environment variables are required to run the sample, which should be placed in a file named `env.json` in the root directory of the sample.
+
+Use the output of the *Create Service Pricipal* Step below to populate the azure_login_cmd property.
+
+```json
+{
+    "resource_id": "/subscriptions/xxxx-xxx-xx-xx-xxx/resourceGroups/AzureQuantum/providers/Microsoft.Quantum/Workspaces/rcQuantum",
+    "location": "East US",
+    "account_url": "https://xxxx.blob.core.windows.net",
+    "storage_account_key": "xxxx",
+    "file_dir": "output",
+    "quantum_target": "ionq.simulator",
+     "azure_login_cmd" : "az login --service-principal -u xx -p xx --tenant xx"
+}
+```
+
+The app reads from this file. A future version will allow you to pass certain properties via env variables as well.
+
+
 
 ### Create a Service Principal in Azure Commercial, which will be used to authenticate to Azure Quantum
 ```bash
- az ad sp create-for-rbac --name "rc-az-quantum" --sdk-auth --role contributor --scopes /subscriptions/917416c8-760a-45f2-a774-671813cee4f9/resourceGroups/AzureQuantum
+ az ad sp create-for-rbac --name "rc-az-quantum" --sdk-auth --role contributor --scopes /subscriptions/xxx/resourceGroups/AzureQuantum
 ```
 
 Your output should look like this:
@@ -42,6 +64,8 @@ Your output should look like this:
 }
 ```
 
+Copy the output of the command, as you'll need it when you create the env.json file, specifically, the azure_login_cmd property.
+
 ### Running the sample from the command line
 ```bash
 python3 main.py
@@ -49,7 +73,7 @@ python3 main.py
 
 ## Build the container to run the sample
 ```bash
-docker build --platform linux/amd64 -t quant-sim:1 .
+docker build -t quant-sim:1 .
 ```
 
 If you're running on a Mac with an M1 chip, you'll may need to build the container for the ARM64 architecture if you want to run it on a Linux host:
@@ -59,7 +83,7 @@ docker build --platform linux/amd64 -t quant-sim:1 .
 
 ### Running the container
 ```bash
-docker run -it --rm  quant-sim:1
+docker run --rm  quant-sim:1
 ```
 
 The --rm flag will remove the container after it exits.

@@ -6,3 +6,4 @@ azure-storage-blob
 azure-identity
 pytest
 azure-cli
+rich
